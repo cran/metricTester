@@ -39,8 +39,8 @@
 #'
 #' @importFrom picante sample2matrix
 #'
-#' @references Miller, E. T. In revision. A new dispersal-informed null model for
-#' community ecology shows strong performance.
+#' @references Miller, E. T. 2016. A new dispersal-informed null model for
+#' community ecology shows strong performance. biorxiv.
 #'
 #' @examples
 #' #set up a matrix to simulate lat/long
@@ -93,7 +93,8 @@
 #'
 #' cdm[is.na(cdm)] <- 0
 #'
-#' newCDM <- dispersalNull(cdm, tree, distances)
+#' #not run
+#' #newCDM <- dispersalNull(cdm, tree, distances)
 
 dispersalNull <- function(picante.cdm, tree, distances.among, abundance.matters=TRUE, 
 	abundance.assigned="directly")
