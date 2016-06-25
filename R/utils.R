@@ -67,6 +67,15 @@ my_QE <- function(metrics.input)
 	QE
 }
 
+my_MRD <- function(metrics.input)
+	MRD(metrics.input$picante.cdm, metrics.input$tree, abundance.weighted=FALSE)
+
+my_distMRCA1 <- function(metrics.input)
+	distMRCA(metrics.input$picante.cdm, metrics.input$tree, pairwise=FALSE)
+
+my_distMRCA2 <- function(metrics.input)
+	distMRCA(metrics.input$picante.cdm, metrics.input$tree, pairwise=TRUE)
+
 ##########################################################################################
 ################################### BETA METRICS #########################################
 ##########################################################################################
@@ -495,4 +504,13 @@ failed <- function(single.iteration, concat.by)
 	
 	temp
 	
+}
+
+#this is a function borrowed from geiger to inform when a function is going to be
+#deprecated
+
+.deprecate <- function (prev, curr, ...) 
+{
+    warning(paste(sQuote(prev), "is being deprecated: use", paste(sQuote(curr), 
+        "instead", collapse = " or "), sep = " "), call.=FALSE, ...)
 }
