@@ -20,10 +20,18 @@
 #' @param cores This function can run in parallel. In order to do so, the user must
 #' specify the desired number of cores to utilize. The default is "seq", which runs the
 #' calculations sequentially.
-#' @param nulls Optional list of named null model functions to use. If invoked, this 
-#' option will likely be used to run a subset of the defined null models.
-#' @param metrics Optional list of named metric functions to use. If invoked, this option
-#' will likely be used to run a subset of the defined metrics.
+#' @param nulls Optional. If not provided, defines the nulls as all of those in
+#' defineNulls. If only a subset of those is desired, then nulls should take
+#' the form of a character vector corresponding to named functions from defineNulls.
+#' The available nulls can be determined by running names(defineNulls()). Otherwise,
+#' if the user would like to define a new null on the fly, the argument nulls can take
+#' the form of a named list of new functions (nulls). 
+#' @param metrics Optional. If not provided, defines the metrics as all of those in
+#' defineMetrics. If only a subset of those is desired, then metrics should take
+#' the form of a character vector corresponding to named functions from defineMetrics.
+#' The available metrics can be determined by running names(defineMetrics()). Otherwise,
+#' if the user would like to define a new metric on the fly, the argument can take
+#' the form of a named list of new functions (metrics).
 #'
 #' @details This function sends out jobs to as many cores as are specified. Each 
 #' randomizes the input CDM according to all defined null models, then calculates each
@@ -36,9 +44,9 @@
 #'
 #' @export
 #'
-#' @references Miller, E. T., D. R. Farine, and C. H. Trisos. 2015. Phylogenetic community
+#' @references Miller, E. T., D. R. Farine, and C. H. Trisos. 2016. Phylogenetic community
 #' structure metrics and null models: a review with new methods and software.
-#' bioRxiv 025726.
+#' Ecography DOI: 10.1111/ecog.02070
 #'
 #' @examples
 #' #simulate tree with birth-death process
@@ -49,17 +57,31 @@
 #' cdm <- simulateComm(tree, richness.vector=10:25, abundances=sim.abundances)
 #'
 #' rawResults <- metricsNnulls(tree, cdm, randomizations=3,
-#'	nulls=list("richness"=metricTester:::my_richnessNull,
-#'	"frequency"=metricTester:::my_frequency))
+#'	nulls=c("richness", "frequency"))
 
 metricsNnulls <- function(tree, picante.cdm, optional.dists=NULL, regional.abundance=NULL,
 	 distances.among=NULL, randomizations=2, cores="seq", nulls, metrics)
 {
-	#if a list of named metric functions is not passed in, assign metrics to be NULL, in
+	#if a vector of named metric functions is not passed in, assign metrics to be NULL, in
 	#which case all metrics will be calculated
 	if(missing(metrics))
 	{
 		metrics <- NULL
+		new_metric <- FALSE
+	}
+	
+	#if a vector is passed in, and if the names do not perfectly match some or all of
+	#those in defineMetrics, then need to set this to TRUE
+	else
+	{
+		if(length(setdiff(metrics, names(defineMetrics()))) > 0)
+		{
+			new_metric <- TRUE
+		}
+		else
+		{
+			new_metric <- FALSE
+		}
 	}
 		
 	#if a list of named nulls functions is not passed in, assign nulls to be NULL, in
@@ -67,8 +89,23 @@ metricsNnulls <- function(tree, picante.cdm, optional.dists=NULL, regional.abund
 	if(missing(nulls))
 	{
 		nulls <- NULL
+		new_null <- FALSE
 	}	
 
+	#if a vector is passed in, and if the names do not perfectly match some or all of
+	#those in defineNulls, then need to set this to TRUE
+	else
+	{
+		if(length(setdiff(nulls, names(defineNulls()))) > 0)
+		{
+			new_null <- TRUE
+		}
+		else
+		{
+			new_null <- FALSE
+		}
+	}
+		
 	if(cores == "seq")
 	{
 		#warn that the analysis is being run sequentially
@@ -82,12 +119,12 @@ metricsNnulls <- function(tree, picante.cdm, optional.dists=NULL, regional.abund
 		randomResults <- foreach(i = 1:randomizations) %do%
 		{
 			#run the nulls across the prepped data. this randomizes the CDMs all at once
-			randomMatrices <- runNulls(nullsPrepped, nulls)
+			randomMatrices <- runNulls(nullsPrepped, nulls, new_=new_null)
 			#prep the randomized CDMs to calculate the metrics across them
 			randomPrepped <- lapply(randomMatrices, function(x) 
 				prepData(tree=tree, picante.cdm=x, optional.dists=optional.dists))
 			#calculate the metrics
-			lapply(randomPrepped, calcMetrics, metrics)
+			lapply(randomPrepped, calcMetrics, metrics, new_=new_metric)
 		}
 	}
 
@@ -103,12 +140,12 @@ metricsNnulls <- function(tree, picante.cdm, optional.dists=NULL, regional.abund
 		randomResults <- foreach(i = 1:randomizations) %dopar%
 		{
 			#run the nulls across the prepped data. this randomizes the CDMs all at once
-			randomMatrices <- runNulls(nullsPrepped, nulls)
+			randomMatrices <- runNulls(nullsPrepped, nulls, new_=new_null)
 			#prep the randomized CDMs to calculate the metrics across them
 			randomPrepped <- lapply(randomMatrices, function(x) 
 				prepData(tree=tree, picante.cdm=x, optional.dists=optional.dists))
 			#calculate the metrics
-			lapply(randomPrepped, calcMetrics, metrics)
+			lapply(randomPrepped, calcMetrics, metrics, new_=new_metric)
 		}
 
 		registerDoSEQ()

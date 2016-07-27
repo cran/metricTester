@@ -10,11 +10,15 @@ sesField(field.input, metrics, nulls, randomizations, regional.abundance,
 \arguments{
 \item{field.input}{Prepped field.input object.}
 
-\item{metrics}{Optional list of named metric functions to use. If invoked, this option
-will likely be used to run a subset of the defined metrics.}
+\item{metrics}{Optional. If not provided, defines the metrics as all of those in
+defineMetrics. If only a subset of those metrics is desired, then metrics should take
+the form of a character vector corresponding to named functions from defineMetrics.
+The available metrics can be determined by running names(defineMetrics()).}
 
-\item{nulls}{Optional list of named null model functions to use. If invoked, this 
-option will likely be used to run a subset of the defined null models.}
+\item{nulls}{Optional. If not provided, defines the nulls as all of those in
+defineNulls. If only a subset of those is desired, then nulls should take
+the form of a character vector corresponding to named functions from defineNulls.
+The available nulls can be determined by running names(defineNulls()).}
 
 \item{randomizations}{The number of times the input CDM should be randomized and the
 metrics calculated across it.}
@@ -61,8 +65,7 @@ tree <- drop.tip(tree, setdiff(tree$tip.label, colnames(cdm)))
 prepped <- prepFieldData(tree=tree, picante.cdm=cdm)
 
 results <- sesField(prepped, randomizations=3,
-metrics=list("NAW_MPD"=metricTester:::naw_mpd),
-nulls=list("richness"=metricTester:::my_richnessNull))
+metrics="NAW_MPD", nulls="richness")
 }
 \references{
 Miller, Wagner, Harmon & Ricklefs. In review. Radiating despite a lack of

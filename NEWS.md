@@ -1,3 +1,19 @@
+# metricTester 1.3.0
+
+* Finished major revisions to internal package checks, inputs. Arguments are much easier to specify, and functions are better equipped to deal with outputs of varying sizes. Many functions were changed, and it is possible some things may have broken. Please report any issues on the GitHub site.
+
+# metricTester 1.2.5
+
+* Continuing under the hood improvements: almost all downstream functions can now handle outputs from the simulation functions of variable length and dimensions with regards to which spatial simulations, null models and metrics were included. The functions metricPerformance and nullPerformance still need revision.
+
+# metricTester 1.2.4
+
+* Major improvements in the way metrics, null models and spatial simulations can be specified. If only a subset of pre-defined options are desired, rather than needing to pass a named list of functions, these functions now accept character vectors corresponding to the options as defined in defineMetrics(), defineNulls(), and defineSimulations(). Can still accommodate new metrics, nulls and simulations defined on the fly.
+
+# metricTester 1.2.3
+
+* Adding varLandscape. Also changed color scaling functions for examples from those in colorRamps to those in plotrix.
+
 # metricTester 1.2.2
 
 * Replaced the previous simulateComm function with a newer version that always returns a community data matrix with all species from the input tree. This should avoid any errors in the examples.

@@ -20,10 +20,18 @@
 #' @param cores This function can run in parallel. In order to do so, the user must
 #' specify the desired number of cores to utilize. The default is "seq", which runs the
 #' calculations sequentially.
-#' @param nulls Optional list of named null model functions to use. If invoked, this 
-#' option will likely be used to run a subset of the defined null models.
-#' @param metrics Optional list of named metric functions to use. If invoked, this option
-#' will likely be used to run a subset of the defined metrics.
+#' @param nulls Optional. If not provided, defines the nulls as all of those in
+#' defineNulls. If only a subset of those is desired, then nulls should take
+#' the form of a character vector corresponding to named functions from defineNulls.
+#' The available nulls can be determined by running names(defineNulls()). Otherwise,
+#' if the user would like to define a new null on the fly, the argument nulls can take
+#' the form of a named list of new functions (nulls). 
+#' @param metrics Optional. If not provided, defines the metrics as all of those in
+#' defineBetaMetrics. If only a subset of those is desired, then metrics should take
+#' the form of a character vector corresponding to named functions from defineBetaMetrics.
+#' The available metrics can be determined by running names(defineBetaMetrics()).
+#' If the user would like to define a new metric on the fly, the argument can take
+#' the form of a named list of new functions (metrics).
 #'
 #' @details This function sends out jobs to as many cores as are specified. Each 
 #' randomizes the input CDM according to all defined null models, then calculates each
@@ -39,9 +47,9 @@
 #' @importFrom foreach foreach %dopar% registerDoSEQ
 #' @importFrom doParallel registerDoParallel
 #'
-#' @references Miller, E. T., D. R. Farine, and C. H. Trisos. 2015. Phylogenetic community
+#' @references Miller, E. T., D. R. Farine, and C. H. Trisos. 2016. Phylogenetic community
 #' structure metrics and null models: a review with new methods and software.
-#' bioRxiv 025726.
+#' Ecography DOI: 10.1111/ecog.02070
 #'
 #' @examples
 #' #simulate tree with birth-death process
@@ -52,8 +60,7 @@
 #' cdm <- simulateComm(tree, richness.vector=10:25, abundances=sim.abundances)
 #'
 #' rawResults <- betaMetricsNnulls(tree, cdm, randomizations=3,
-#'	nulls=list("richness"=metricTester:::my_richnessNull,
-#'	"frequency"=metricTester:::my_frequency))
+#'	nulls=c("richness", "frequency"))
 
 betaMetricsNnulls <- function(tree, picante.cdm, optional.dists=NULL,
 	regional.abundance=NULL, distances.among=NULL, randomizations=2, cores="seq", nulls,

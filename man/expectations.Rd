@@ -31,11 +31,19 @@ metrics calculated across it.}
 \item{cores}{This function can run in parallel. In order to do so, the user must
 specify the desired number of cores to utilize.}
 
-\item{metrics}{Optional list of named metric functions to use. If invoked, this option
-will likely be used to run a subset of the defined metrics.}
+\item{metrics}{Optional. If not provided, defines the metrics as all of those in
+defineMetrics. If only a subset of those is desired, then metrics should take
+the form of a character vector corresponding to named functions from defineMetrics.
+The available metrics can be determined by running names(defineMetrics()). Otherwise,
+if the user would like to define a new metric on the fly, the argument can take
+the form of a named list of new functions (metrics).}
 
-\item{nulls}{Optional list of named null model functions to use. If invoked, this 
-option will likely be used to run a subset of the defined null models.}
+\item{nulls}{Optional. If not provided, defines the nulls as all of those in
+defineNulls. If only a subset of those is desired, then nulls should take
+the form of a character vector corresponding to named functions from defineNulls.
+The available nulls can be determined by running names(defineNulls()). Otherwise,
+if the user would like to define a new null on the fly, the argument nulls can take
+the form of a named list of new functions (nulls).}
 
 \item{concat.by}{Whether to concatenate the randomizations by richness, plot or both}
 
@@ -68,11 +76,10 @@ sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1
 cdm <- simulateComm(tree, richness.vector=10:13, abundances=sim.abundances)
 
 #below not run for timing issues on CRAN
-#test <- expectations(picante.cdm=cdm, tree=tree, optional.dists=NULL,
-#regional.abundance=NULL, distances.among=NULL, randomizations=3, cores="seq",
-#nulls=list("richness"=metricTester:::my_richnessNull), 
-#metrics=list("richness"=metricTester:::my_richness, "NAW_MPD"=metricTester:::naw_mpd),
-#concat.by="both", output.raw=FALSE)
+test <- expectations(picante.cdm=cdm, tree=tree, optional.dists=NULL,
+regional.abundance=NULL, distances.among=NULL, randomizations=3, cores="seq",
+nulls="richness", metrics=c("richness", "NAW_MPD"),
+concat.by="both", output.raw=FALSE)
 
 #an example of how to explore behavior of a new metric in the metricTester framework
 #this "metric" simply calculates the richness of each plot in the CDM
@@ -84,13 +91,13 @@ output
 
 #test2 <- expectations(picante.cdm=cdm, tree=tree, optional.dists=NULL,
 #regional.abundance=NULL, distances.among=NULL, randomizations=3, cores=1,
-#nulls=list("frequency"=metricTester:::my_frequency), 
+#nulls="frequency", 
 #metrics=list("richness"=metricTester:::my_richness, "exampleMetric"=exampleMetric),
 #concat.by="both", output.raw=FALSE)
 }
 \references{
-Miller, E. T., D. R. Farine, and C. H. Trisos. 2015. Phylogenetic community
+Miller, E. T., D. R. Farine, and C. H. Trisos. 2016. Phylogenetic community
 structure metrics and null models: a review with new methods and software.
-bioRxiv 025726.
+Ecography DOI: 10.1111/ecog.02070
 }
 

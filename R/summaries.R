@@ -18,9 +18,9 @@
 #'
 #' @importFrom dplyr group_by summarize
 #'
-#' @references Miller, E. T., D. R. Farine, and C. H. Trisos. 2015. Phylogenetic community
+#' @references Miller, E. T., D. R. Farine, and C. H. Trisos. 2016. Phylogenetic community
 #' structure metrics and null models: a review with new methods and software.
-#' bioRxiv 025726.
+#' Ecography DOI: 10.1111/ecog.02070
 #'
 #' @examples
 #' #simulate tree with birth-death process
@@ -30,13 +30,14 @@
 #'
 #' cdm <- simulateComm(tree, richness.vector=10:25, abundances=sim.abundances)
 #'
-#' #below not run for example timing issues on CRAN
+#' #run the metrics and nulls combo function
+#' rawResults <- metricsNnulls(tree=tree, picante.cdm=cdm, randomizations=2, cores="seq",
+#'	nulls=c("richness","frequency"), metrics=c("richness","NAW_MPD"))
 #'
-#' #rawResults <- metricsNnulls(tree, cdm)
+#' #summarize the results
+#' results <- reduceRandomizations(rawResults)
 #'
-#' #results <- reduceRandomizations(rawResults)
-#'
-#' #test <- summaries(results$frequency, concat.by="richness")
+#' test <- summaries(results$frequency, concat.by="richness")
 
 summaries <- function(null.output, concat.by="richness")
 {
